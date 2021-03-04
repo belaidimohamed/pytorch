@@ -6,41 +6,43 @@ from tqdm import tqdm
 import network
 import os
 
-if torch.cuda.is_available():
-    device = torch.device("cuda:0")  # you can continue going on here, like cuda:1 cuda:2....etc.
-    print("Running on the GPU")
-else:
-    device = torch.device("cpu")
-    print("Running on the CPU")
+# if torch.cuda.is_available():
+#     device = torch.device("cuda:0")  # you can continue going on here, like cuda:1 cuda:2....etc.
+#     print("Running on the GPU")
+# else:
+#     device = torch.device("cpu")
+#     print("Running on the CPU")
+#
+# net = network.Net().to(device)
+# training_data = np.load(r"C:\Users\mohamed\Desktop\tensor\training_data.npy",allow_pickle=True)
+#
+# # ------------------------------------------------- Config ----------------------------------------------------
+#
+# X = torch.Tensor([i[0] for i in training_data]).view(-1,50,50)
+# X = X/255.0
+# Y = torch.Tensor([i[1] for i in training_data])
+# VAL_PCT = 0.1  # lets reserve 10% of our data for validation
+# val_size = int(len(X)*VAL_PCT)
+#
+# train_X = X[:-val_size]
+# train_y = Y[:-val_size]
+#
+# test_X = X[-val_size:]
+# test_y = Y[-val_size:]
+#
+# print(len(training_data))
+# print(len(train_X), len(test_X))
 
-net = network.Net().to(device)
-training_data = np.load(r"C:\Users\mohamed\Desktop\tensor\training_data.npy",allow_pickle=True)
-
-# ------------------------------------------------- Config ----------------------------------------------------
 
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 # loss_function = nn.MSELoss()
 
 def smoothingLabel(outputs, target ,smoothing_coefficient) :
     weight = outputs.new_ones(outputs.size()) * smoothing_coefficient / (outputs.size(-1) - 1.)
-    weight.scatter_(-1, target.unsqueeze(-1), (1. - smoothing_coefficient))
+
+    weight.scatter_(-1, target.long(), (1. - smoothing_coefficient))
     losses= -weight * outputs
     return losses.sum(dim=-1).mean()
-
-X = torch.Tensor([i[0] for i in training_data]).view(-1,50,50)
-X = X/255.0
-Y = torch.Tensor([i[1] for i in training_data])
-VAL_PCT = 0.1  # lets reserve 10% of our data for validation
-val_size = int(len(X)*VAL_PCT)
-
-train_X = X[:-val_size]
-train_y = Y[:-val_size]
-
-test_X = X[-val_size:]
-test_y = Y[-val_size:]
-
-print(len(training_data))
-print(len(train_X), len(test_X))
 
 # ------------------------------------------------- Training ----------------------------------------------------
 
@@ -58,7 +60,8 @@ def train(net,BATCH_SIZE=256,EPOCHS=6):
 
             optimizer.zero_grad()   # zero the gradient buffers
             outputs = net(batch_X)
-            loss = loss_function(outputs, batch_y)
+
+            loss = smoothingLabel(outputs, batch_y,0)
             loss.backward()
             optimizer.step()    # Does the update
 
@@ -85,7 +88,7 @@ def test(net):
             total += 1
 
     print("Accuracy: ", round(correct/total, 3))
-    response = input('save my ass or no (y/n) ? : ')
+    response = input('save me or no (y/n) ? : ')
     while 1:
         if response == 'n':
             break
