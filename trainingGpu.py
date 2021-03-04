@@ -19,7 +19,13 @@ training_data = np.load(r"C:\Users\mohamed\Desktop\tensor\training_data.npy",all
 # ------------------------------------------------- Config ----------------------------------------------------
 
 optimizer = optim.Adam(net.parameters(), lr=0.001)
-loss_function = nn.MSELoss()
+# loss_function = nn.MSELoss()
+
+def smoothingLabel(outputs, target ,smoothing_coefficient) :
+    weight = outputs.new_ones(outputs.size()) * smoothing_coefficient / (outputs.size(-1) - 1.)
+    weight.scatter_(-1, target.unsqueeze(-1), (1. - smoothing_coefficient))
+    losses= -weight * outputs
+    return losses.sum(dim=-1).mean()
 
 X = torch.Tensor([i[0] for i in training_data]).view(-1,50,50)
 X = X/255.0
@@ -84,7 +90,7 @@ def test(net):
         if response == 'n':
             break
         elif response == 'y':
-            torch.save(net.state_dict(), os.path.join(r"C:\Users\mohamed\Desktop\tensor",str(round(correct/total, 3))+"-dogVscat" ))
+            torch.save(net.state_dict(), os.path.join(r"C:\Users\mohamed\Desktop\tensor\trained_models",str(round(correct/total, 3))+"-dogVscat" ))
             print('saving done !')
             break
         else :

@@ -7,28 +7,28 @@ from tqdm import tqdm
 import network
 
 net = network.Net()
-# training_data = np.load("training_data.npy",allow_pickle=True)
-#
-#
-# # ------------------------------------------------- Config ----------------------------------------------------
-#
-# optimizer = optim.Adam(net.parameters(), lr=0.001)
-# loss_function = nn.MSELoss()
-#
-# X = torch.Tensor([i[0] for i in training_data]).view(-1,50,50)
-# X = X/255.0
-# Y = torch.Tensor([i[1] for i in training_data])
-# VAL_PCT = 0.1  # lets reserve 10% of our data for validation
-# val_size = int(len(X)*VAL_PCT)
-#
-# train_X = X[:-val_size]
-# train_y = Y[:-val_size]
-#
-# test_X = X[-val_size:]
-# test_y = Y[-val_size:]
-#
-# print(len(training_data))
-# print(len(train_X), len(test_X))
+training_data = np.load("training_data.npy",allow_pickle=True)
+
+
+# ------------------------------------------------- Config ----------------------------------------------------
+
+optimizer = optim.Adam(net.parameters(), lr=0.001)
+loss_function = nn.MSELoss()
+
+X = torch.Tensor([i[0] for i in training_data]).view(-1,50,50)
+X = X/255.0
+Y = torch.Tensor([i[1] for i in training_data])
+VAL_PCT = 0.1  # lets reserve 10% of our data for validation
+val_size = int(len(X)*VAL_PCT)
+
+train_X = X[:-val_size]
+train_y = Y[:-val_size]
+
+test_X = X[-val_size:]
+test_y = Y[-val_size:]
+
+print(len(training_data))
+print(len(train_X), len(test_X))
 
 # ------------------------------------------------- Training ----------------------------------------------------
 
@@ -64,7 +64,7 @@ with torch.no_grad():
         if predicted_class == real_class:
             correct += 1
         total += 1
-print("Accuracy: ", round(correct/total, 3))
+print("Accuracy : ", round(correct/total, 3))
 
 
 

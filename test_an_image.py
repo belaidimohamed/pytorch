@@ -9,13 +9,13 @@ import os
 
 device = torch.device('cpu')
 model = network.Net()
-model.load_state_dict(torch.load(r"C:\Users\mohamed\Desktop\tensor\0.758-dogVscat", map_location=device))
+model.load_state_dict(torch.load(r"C:\Users\mohamed\Desktop\tensor\trained_models\0.758-dogVscat", map_location=device))
 
 path = input("feed me the full path of the image to test :) : ")
 imgg = cv2.imread(path,cv2.IMREAD_GRAYSCALE)
 
 if imgg == None :
-    imgg = cv2.imread(os.path.join(r"C:\Users\mohamed\Desktop\tensor",path),cv2.IMREAD_GRAYSCALE)
+    imgg = cv2.imread(os.path.join(r"C:\Users\mohamed\Desktop\tensor\assets",path),cv2.IMREAD_GRAYSCALE)
 
 img = cv2.resize(imgg,(50,50))
 img_array =  np.array(img)
