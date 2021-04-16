@@ -2,3 +2,5 @@
 PetImages/
 *.npy
 *.pyc
+downloads/
+*.ini

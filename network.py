@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+img_resolution = 50
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -10,7 +12,7 @@ class Net(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, 5) # input is 32, bc the first layer output 32. Then we say the output will be 64 channels, 5x5 kernel / window
         self.conv3 = nn.Conv2d(64, 128, 5)
 
-        x = torch.randn(50,50).view(-1,1,50,50)
+        x = torch.randn(img_resolution,img_resolution).view(-1,1,img_resolution,img_resolution)
         self._to_linear = None
         self.convs(x)
 
@@ -33,4 +35,4 @@ class Net(nn.Module):
         x = x.view(-1, self._to_linear)  # .view is reshape ... this flattens X before
         x = F.relu(self.fc1(x))
         x = self.fc2(x) # bc this is our output layer. No activation here.
-        return F.softmax(x, dim=1)
+        return F.log_softmax(x, dim=1)
